@@ -2,14 +2,13 @@
 
 <html lang="en">
     <head lang="en">
-        <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+        <th:block th:insert="~{fragments/headerinc :: head}"></th:block>
     </head>    
     <body>
-        <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+        <th:block th:insert="~{fragments/header :: header}"></th:block>
         <div class="container-fluid">
             <div class="container-error jumbotron alert-danger">
-                <h2>ERRO 404</h2>
-
+                <h2 th:text="${message}"></h2>
             </div>
         </div>
     </body>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headerinc :: head}"></th:block>
+    <title>Добавить студента</title>
+</head>
+<body>
+<th:block th:insert="~{fragments/header :: header}"></th:block>
+<div class="container mt-4">
+    <h1>Добавить студента</h1>
+    <form th:action="@{/admin/students}" th:object="${studentRequest}" method="post">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" th:field="*{email}" class="form-control" required>
+            <div th:if="${#fields.hasErrors('email')}" class="text-danger">
+                <p th:each="err : ${#fields.errors('email')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" th:field="*{password}" class="form-control" required>
+            <div th:if="${#fields.hasErrors('password')}" class="text-danger">
+                <p th:each="err : ${#fields.errors('password')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="passwordCheck">Подтверждение пароля</label>
+            <input type="password" id="passwordCheck" name="passwordCheck" th:field="*{passwordCheck}" class="form-control" required>
+            <div th:if="${#fields.hasErrors('passwordCheck')}" class="text-danger">
+                <p th:each="err : ${#fields.errors('passwordCheck')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="firstname">Имя</label>
+            <input type="text" id="firstname" name="firstname" th:field="*{firstname}" class="form-control" required>
+            <div th:if="${#fields.hasErrors('firstname')}" class="text-danger">
+                <p th:each="err : ${#fields.errors('firstname')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="lastname">Фамилия</label>
+            <input type="text" id="lastname" name="lastname" th:field="*{lastname}" class="form-control" required>
+            <div th:if="${#fields.hasErrors('lastname')}" class="text-danger">
+                <p th:each="err : ${#fields.errors('lastname')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="grade">Ученая степень</label>
+            <select id="grade" name="grade" th:field="*{grade}" class="form-control">
+                <option th:each="grade : ${T(course.domain.enums.Grade).values()}"
+                        th:value="${grade}"
+                        th:text="${grade.name}">Ученая степень</option>
+            </select>
+            <div th:if="${#fields.hasErrors('grade')}" class="text-danger">
+                <p th:each="err : ${#fields.errors('grade')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="course">Курс</label>
+            <select id="course" name="course" th:field="*{course}" class="form-control">
+                <option th:each="course : ${T(course.domain.enums.Course).values()}"
+                        th:value="${course}"
+                        th:text="${course.name}">Курс</option>
+            </select>
+            <div th:if="${#fields.hasErrors('course')}" class="text-danger">
+                <p th:each="err : ${#fields.errors('course')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="department">Факультет</label>
+            <select id="department" name="department" th:field="*{department}" class="form-control">
+                <option th:each="department : ${T(course.domain.enums.Department).values()}"
+                        th:value="${department}"
+                        th:text="${department.name}">Выберите факультет</option>
+            </select>
+            <div th:if="${#fields.hasErrors('department')}" class="text-danger">
+                <p th:each="err : ${#fields.errors('department')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Сохранить</button>
+    </form>
+</div>
+</body>
+</html>

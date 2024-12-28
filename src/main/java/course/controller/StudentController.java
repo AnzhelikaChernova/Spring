@@ -1,102 +1,76 @@
 package course.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import course.domain.dto.student.StudentLessonValidation;
+import course.domain.dto.student.StudentScheduleResponse;
+import course.domain.validator.StudentLessonValidator;
+import course.service.AuthService;
+import course.service.StudentLessonService;
+import course.service.TeacherLessonService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import course.entity.Student;
-import course.entity.Course;
-import course.service.StudentServiceImpl;
-import course.service.CourseServiceImpl;
-import javax.validation.Valid;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequiredArgsConstructor
+@RequestMapping("student")
 public class StudentController {
+    private final StudentLessonService studentLessonService;
+    private final TeacherLessonService teacherLessonService;
+    private final AuthService authService;
+    private final StudentLessonValidator studentLessonValidator;
 
-    @Autowired
-    private StudentServiceImpl studentService;
+    @GetMapping("register")
+    public String showRegistrationForm(Model model) {
+        var student = authService.getAuthenticatedUser();
+        StudentLessonValidation studentLessonValidation = new StudentLessonValidation();
+        studentLessonValidation.setStudentId(student.getId());  // Устанавливаем studentId
 
-    @Autowired
-    private CourseServiceImpl courseService;
-
-    @RequestMapping("students")
-    public String index(Model model) {
-        List<Student> students = (List<Student>) studentService.findAllByOrderByFirstNameAsc();
-        model.addAttribute("students", students);
-        return "students";
+        model.addAttribute("studentLessonValidation", studentLessonValidation);
+        model.addAttribute("lessons", teacherLessonService.findAll());
+        model.addAttribute("student", student);
+        return "students/register";
     }
 
-    @RequestMapping(value = "student/new")
-    public String newStudent(Model model) {
-        model.addAttribute("student", new Student());
-        model.addAttribute("title", "Add Student");
-        return "studentForm";
-    }
+    @PostMapping("register")
+    public String registerStudent(
+            @ModelAttribute("studentLessonValidation") StudentLessonValidation studentLessonValidation,
+            BindingResult bindingResult,
+            Model model) {
 
-    @RequestMapping(value = "student/edit/{id}")
-    public String editStudent(@PathVariable("id") Long studentId, Model model) {
-        model.addAttribute("student", studentService.findStudentById(studentId));
-        model.addAttribute("title", "Edit Student");
-        return "studentForm";
-    }
+        studentLessonValidator.validate(studentLessonValidation, bindingResult);
 
-    @RequestMapping("student/{id}")
-    public String showStudent(@PathVariable("id") Long studentId, Model model) {
-        model.addAttribute("student", studentService.findStudentById(studentId));
-        model.addAttribute("title", "Show Student");
-        return "studentShow";
-    }
-    @RequestMapping(value = "saveStudent", method = RequestMethod.POST)
-    public String saveStudent(@Valid @ModelAttribute("student") Student student, BindingResult bindingResult, Model model) {
-        if (!bindingResult.hasErrors()) {
-            studentService.saveStudent(student);
-        } else {
-            String title = (student.getId() == null) ? "Add Student" : "Edit Student";
-            model.addAttribute("title", title);
-            return "studentForm";
+        var student = authService.getAuthenticatedUser();
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("lessons", teacherLessonService.findAll());
+            model.addAttribute("student", student);
+            return "students/register";
         }
-        return "redirect:/students";
+
+        studentLessonService.registerForLesson(
+                student.getId(),
+                studentLessonValidation.getLessonId()
+        );
+
+        return "redirect:/student/schedule";
     }
 
-    @RequestMapping(value = "student/delete/{id}", method = RequestMethod.GET)
-    public String deleteStudent(@PathVariable("id") Long studentId, Model model) {
-        studentService.deleteStudentById(studentId);
-        return "redirect:/students";
+    @GetMapping("schedule")
+    public String getStudentSchedule(Model model) {
+        var student = authService.getAuthenticatedUser();
+        StudentScheduleResponse schedule = studentLessonService.getStudentSchedule(student.getId());
+
+        model.addAttribute("schedule", schedule);
+        return "students/schedule";
     }
 
-    @RequestMapping(value = "addStudentCourse/{id}", method = RequestMethod.GET)
-    public String addStudentCourse(@PathVariable("id") Long studentId, Model model) {
-        model.addAttribute("student", studentService.findStudentById(studentId));
-        model.addAttribute("courses", courseService.findAllCourses());
-        return "addStudentCourse";
-    }
-
-    @RequestMapping(value = "student/{id}/courses", method = RequestMethod.GET)
-    public String studentsAddCourse(@RequestParam(value = "action", required = true) String action, @PathVariable Long id, @RequestParam Long courseId, Model model) {
-        Student student = studentService.findStudentById(id);
-        Course course = courseService.findCourseById(courseId);
-
-        if (!student.hasCourse(course)) {
-            student.getCourses().add(course);
-        }
-        studentService.saveStudent(student);
-        model.addAttribute("student", studentService.findStudentById(id));
-        model.addAttribute("courses", courseService.findAllCourses());
-        return "redirect:/students";
-    }
-
-    @RequestMapping(value = "getstudents", method = RequestMethod.GET)
-    public @ResponseBody
-    List<Student> getStudents() {
-        return (List<Student>) studentService.findAllStudents();
+    @GetMapping("lessons")
+    public String getLessonsForStudent(Model model) {
+        var student = authService.getAuthenticatedUser();
+        model.addAttribute("lessons", studentLessonService.getLessonsForStudent(student.getId()));
+        return "students/lessons";
     }
 }
+

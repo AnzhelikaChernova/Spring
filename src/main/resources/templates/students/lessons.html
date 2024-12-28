@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Уроки студента</title>
+    <th:block th:insert="~{fragments/headerinc :: head}"></th:block>
+</head>
+<body>
+<th:block th:insert="~{fragments/header :: header}"></th:block>
+
+<div class="container mt-4">
+    <h1>Список уроков</h1>
+
+    <p>Студент: <span th:text="${#authentication.name}"></span></p>
+
+    <table class="table table-bordered mt-4">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Отдел</th>
+            <th>День недели</th>
+            <th>Время</th>
+            <th>Курс</th>
+            <th>Количество студентов</th>
+            <th>Кабинет</th>
+            <th>Учитель</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="lessonWithTeacher : ${lessons}">
+            <td th:text="${lessonWithTeacher.lesson.name}"></td>
+            <td th:text="${lessonWithTeacher.lesson.department.name}"></td>
+            <td th:text="${lessonWithTeacher.lesson.dayOfWeek.name}"></td>
+            <td th:text="${lessonWithTeacher.lesson.timeOfLesson.name}"></td>
+            <td th:text="${lessonWithTeacher.lesson.course.name}"></td>
+            <td th:text="${lessonWithTeacher.lesson.studentCount}"></td>
+            <td th:text="${lessonWithTeacher.lesson.cabinet}"></td>
+            <td th:text="${lessonWithTeacher.teacher.firstname + ' ' + lessonWithTeacher.teacher.lastname}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

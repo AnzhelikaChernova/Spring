@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Создать новый урок</title>
+    <th:block th:insert="~{fragments/headerinc :: head}"></th:block>
+</head>
+<body>
+<th:block th:insert="~{fragments/header :: header}"></th:block>
+<div class="container mt-4">
+    <h1>Создать новый урок</h1>
+    <form th:action="@{/admin/lessons}" th:object="${lesson}" method="post">
+        <div th:if="${#fields.hasErrors()}">
+            <div class="alert alert-danger">
+                <ul>
+                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Название</label>
+            <input type="text" id="name" name="name" th:field="*{name}" class="form-control" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="course">Курс</label>
+            <select id="course" name="course" th:field="*{course}" class="form-control">
+                <option th:each="course : ${T(course.domain.enums.Course).values()}"
+                        th:value="${course}" th:text="${course.name}">Курс</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('course')}" th:errors="*{course}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="dayOfWeek">День недели</label>
+            <select id="dayOfWeek" name="dayOfWeek" th:field="*{dayOfWeek}" class="form-control">
+                <option th:each="day : ${T(course.domain.enums.DayOfWeek).values()}"
+                        th:value="${day}" th:text="${day.name}">День недели</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('dayOfWeek')}" th:errors="*{dayOfWeek}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="timeOfLesson">Время занятия</label>
+            <select id="timeOfLesson" name="timeOfLesson" th:field="*{timeOfLesson}" class="form-control">
+                <option th:each="time : ${T(course.domain.enums.TimeOfLesson).values()}"
+                        th:value="${time}" th:text="${time.name}">Время занятия</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('timeOfLesson')}" th:errors="*{timeOfLesson}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="department">Факультет</label>
+            <select id="department" name="department" th:field="*{department}" class="form-control">
+                <option th:each="department : ${T(course.domain.enums.Department).values()}"
+                        th:value="${department}" th:text="${department.name}">Факультет</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="studentCount">Количество студентов</label>
+            <input type="number" id="studentCount" name="studentCount" th:field="*{studentCount}" class="form-control" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('studentCount')}" th:errors="*{studentCount}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="cabinet">Кабинет</label>
+            <input type="number" id="cabinet" name="cabinet" th:field="*{cabinet}" class="form-control" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('cabinet')}" th:errors="*{cabinet}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Создать</button>
+    </form>
+</div>
+</body>
+</html>

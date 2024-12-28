@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Назначение учителя</title>
+    <th:block th:insert="~{fragments/headerinc :: head}"></th:block>
+</head>
+<body>
+<th:block th:insert="~{fragments/header :: header}"></th:block>
+<div class="container mt-4">
+    <h1>Назначение учителя</h1>
+
+    <div class="mb-4">
+        <h3>Назначенный учитель</h3>
+        <p th:if="${assignedTeacher != null}" th:text="${assignedTeacher.firstname + ' ' + assignedTeacher.lastname}">Учитель не назначен</p>
+        <p th:if="${assignedTeacher == null}">Учитель не назначен</p>
+    </div>
+
+    <form th:object="${teacherLesson}" th:action="@{/admin/lessons/assign-teacher}" method="post">
+        <input type="hidden" th:field="*{lessonId}" />
+
+        <div class="form-group">
+            <label for="teacher">Учитель</label>
+            <select id="teacher" th:field="*{teacherId}" class="form-control" required>
+                <option value="" disabled selected>Выберите учителя</option>
+                <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
+                        th:text="${teacher.firstname + ' ' + teacher.lastname}"></option>
+            </select>
+        </div>
+
+        <div th:if="${#fields.hasErrors('lessonId')}" class="text-danger mt-2">
+            <p th:errors="*{lessonId}"></p>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Назначить</button>
+    </form>
+</div>
+</body>
+</html>

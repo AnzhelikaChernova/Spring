@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lesson Registration</title>
+    <th:block th:insert="~{fragments/headerinc :: head}"></th:block>
+</head>
+<body>
+<th:block th:insert="~{fragments/header :: header}"></th:block>
+
+<div class="container mt-5">
+    <h1 class="text-center">Register for a Lesson</h1>
+
+    <form th:action="@{/student/register}" th:object="${studentLessonValidation}" method="post" class="mt-4">
+        <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <label for="lessonId">Select a Lesson:</label>
+            <select id="lessonId" th:field="*{lessonId}" class="form-control">
+                <option value="" disabled selected>Select a lesson</option>
+                <option th:each="lessonTeacher : ${lessons}"
+                        th:value="${lessonTeacher.lesson.id}"
+                        th:text="${lessonTeacher.lesson.name
+                                  + ' (' + lessonTeacher.teacher.firstname + ' '
+                                  + lessonTeacher.teacher.lastname + ')'
+                                  + ' - ' + lessonTeacher.lesson.dayOfWeek.name
+                                  + ' at ' + lessonTeacher.lesson.timeOfLesson.name}">
+                </option>
+            </select>
+            <span th:if="${#fields.hasErrors('lessonId')}" th:errors="*{lessonId}" class="text-danger"></span>
+        </div>
+
+        <input type="hidden" th:field="*{studentId}" th:value="${student.id}" />
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+    </form>
+
+    <h2 class="mt-5">Available Lessons</h2>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Course</th>
+            <th>Cabinet</th>
+            <th>Teacher</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="lessonTeacher : ${lessons}">
+            <td th:text="${lessonTeacher.lesson.name}"></td>
+            <td th:text="${lessonTeacher.lesson.department.name}"></td>
+            <td th:text="${lessonTeacher.lesson.dayOfWeek.name}"></td>
+            <td th:text="${lessonTeacher.lesson.timeOfLesson.name}"></td>
+            <td th:text="${lessonTeacher.lesson.course.name}"></td>
+            <td th:text="${lessonTeacher.lesson.cabinet}"></td>
+            <td th:text="${lessonTeacher.teacher.firstname + ' ' + lessonTeacher.teacher.lastname}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Расписание</title>
+    <th:block th:insert="~{fragments/headerinc :: head}"></th:block>
+</head>
+<body>
+<th:block th:insert="~{fragments/header :: header}"></th:block>
+
+<div class="container mt-4">
+    <h1>Расписание для учителя <span th:text="${schedule.teacher.firstname + ' ' + schedule.teacher.lastname}">Учитель</span></h1>
+
+    <div th:each="daySchedule : ${schedule.schedule}">
+        <h3 th:text="${daySchedule.dayOfWeek}">День недели</h3>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Время</th>
+                <th>Урок</th>
+                <th>Кабинет</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="lesson : ${daySchedule.lessons}">
+                <td th:text="${lesson.timeOfLesson.name}">09:00</td>
+                <td th:text="${lesson.name}">Математика</td>
+                <td th:text="${lesson.cabinet}">101</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
